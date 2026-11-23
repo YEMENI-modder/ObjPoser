@@ -29,5 +29,11 @@
     <Compile Include="ThirdParty\TGASharpLib.cs" />
     <Compile Include="ThirdParty\DDSReaderSharp.cs" />
   </ItemGroup>
+  <ItemGroup>
+    <Content Include="..\poses\*.json">
+      <Link>poses\%(Filename)%(Extension)</Link>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

@@ -8,7 +8,7 @@ namespace ObjPoser
 {
     public static class AppInfo
     {
-        public const string Version = "3.1.0";
+        public const string Version = "3.2.0";
         public const string Author = "YEMENI-modder";
         public const string Repo = "https://github.com/YEMENI-modder/ObjPoser";
     }

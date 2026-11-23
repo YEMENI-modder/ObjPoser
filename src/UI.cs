@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Drawing;
 using System.Drawing.Drawing2D;
 using System.Drawing.Imaging;
+using System.Diagnostics;
 using System.IO;
 using System.Windows.Forms;
 
@@ -376,6 +377,16 @@ namespace ObjPoser
         AxisMap map = new AxisMap();
         Skinner skin; double[] rest;
         List<Pose> presets = Pose.BuildPresets();
+        int builtInPoses, extraPoses; string extraPoseDir; List<string> extraPoseErrors = new List<string>();
+
+        // Extra poses live in a "poses" folder next to ObjPoser.exe (or in the current folder): every *.json file in it is added to the gallery at start-up.
+        static string FindPoseFolder()
+        {
+            string a = Path.Combine(Path.GetDirectoryName(Application.ExecutablePath), "poses"), b = Path.Combine(Directory.GetCurrentDirectory(), "poses");
+            if (Directory.Exists(a) && Directory.GetFiles(a, "*.json").Length > 0) return a;
+            if (Directory.Exists(b) && Directory.GetFiles(b, "*.json").Length > 0) return b;
+            return a;
+        }
         Pose cur, basePose;
         PosedResult posed;
         bool updating;
@@ -397,6 +408,8 @@ namespace ObjPoser
             Width = 1280; Height = 840; StartPosition = FormStartPosition.CenterScreen; MinimumSize = new Size(1000, 680);
             try { Icon = Icon.ExtractAssociatedIcon(Application.ExecutablePath); } catch { }
             for (int i = 0; i < Skeleton.N; i++) rigOff[i] = new double[3];
+            builtInPoses = presets.Count; extraPoseDir = FindPoseFolder();
+            presets.AddRange(Pose.LoadFolder(extraPoseDir, extraPoseErrors)); extraPoses = presets.Count - builtInPoses;
             thumbs.ImageSize = new Size(88, 108); thumbs.ColorDepth = ColorDepth.Depth32Bit;
 
             TabControl tabs = new TabControl(); tabs.Dock = DockStyle.Left; tabs.Width = 372; tabs.Padding = new Point(10, 4);
@@ -517,7 +530,9 @@ namespace ObjPoser
 
             statusBar.Items.Add(statusLbl); statusLbl.Spring = true; statusLbl.TextAlign = ContentAlignment.MiddleLeft;
             progress.Visible = false; progress.Width = 160; statusBar.Items.Add(progress);
-            statusLbl.Text = "Open a T-Pose OBJ to start.   Mouse: drag = rotate, wheel = zoom.   Left side of the character = +X, front = +Z.";
+            statusLbl.Text = "Open a T-Pose OBJ to start.   Mouse: drag = rotate, wheel = zoom.   Left side of the character = +X, front = +Z." +
+                (extraPoses > 0 ? "   |   " + extraPoses + " extra poses loaded from the \"poses\" folder." : "") +
+                (extraPoseErrors.Count > 0 ? "   |   " + extraPoseErrors.Count + " pose file(s) skipped: " + extraPoseErrors[0] : "");
             Controls.Add(statusBar); Controls.Add(toolbar); Controls.Add(menu); MainMenuStrip = menu;
             UpdateEnabled();
         }
@@ -568,6 +583,7 @@ namespace ObjPoser
             Mi(edit, "Mirror pose", Keys.Control | Keys.M, delegate { OnMirror(); }, true);
             Mi(edit, "Save pose...", Keys.None, delegate { OnSavePose(); }, true);
             Mi(edit, "Load pose...", Keys.None, delegate { OnLoadPose(); }, true);
+            Mi(edit, "Open extra poses folder...", Keys.None, delegate { OnOpenPoseFolder(); }, false);
             Mi(vw, "Reset view", Keys.Control | Keys.D0, delegate { ResetView(); }, false);
             Mi(vw, "Toggle skeleton", Keys.Control | Keys.K, delegate { chkSkel.Checked = !chkSkel.Checked; }, false);
             Mi(vw, "Toggle wireframe", Keys.Control | Keys.W, delegate { chkWire.Checked = !chkWire.Checked; }, false);
@@ -847,6 +863,20 @@ namespace ObjPoser
             d.FileName = cur.Name.Split(' ', '(')[0] + ".pose.json";
             if (d.ShowDialog() != DialogResult.OK) return;
             try { File.WriteAllText(d.FileName, cur.ToJson()); SetStatus("Pose saved: " + Path.GetFileName(d.FileName)); }
+            catch (Exception ex) { MessageBox.Show(ex.Message, "Error"); }
+        }
+
+        // The "poses" folder holds extra pose JSON files that are loaded when the program starts.
+        void OnOpenPoseFolder()
+        {
+            try
+            {
+                string dir = Path.Combine(Path.GetDirectoryName(Application.ExecutablePath), "poses");
+                if (Directory.Exists(extraPoseDir)) dir = extraPoseDir;
+                Directory.CreateDirectory(dir);
+                Process.Start(dir);
+                SetStatus("Extra poses: put *.json pose files in " + dir + " and restart ObjPoser (currently loaded: " + extraPoses + ").");
+            }
             catch (Exception ex) { MessageBox.Show(ex.Message, "Error"); }
         }
 

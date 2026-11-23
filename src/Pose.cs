@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Globalization;
+using System.IO;
 using System.Text;
 using System.Text.RegularExpressions;
 
@@ -164,6 +165,22 @@ namespace ObjPoser
             }
             if (found == 0 && ti < 0) throw new Exception("This file does not contain a valid pose.");
             return p;
+        }
+
+        // Loads every *.json pose file of a folder (extra poses that are not built into the program).
+        // Unreadable files are skipped; their names + reasons are added to `errors` (may be null).
+        public static List<Pose> LoadFolder(string dir, List<string> errors)
+        {
+            List<Pose> l = new List<Pose>();
+            if (string.IsNullOrEmpty(dir) || !Directory.Exists(dir)) return l;
+            string[] files = Directory.GetFiles(dir, "*.json");
+            Array.Sort(files, StringComparer.OrdinalIgnoreCase);
+            foreach (string f in files)
+            {
+                try { l.Add(FromJson(File.ReadAllText(f))); }
+                catch (Exception ex) { if (errors != null) errors.Add(Path.GetFileName(f) + ": " + ex.Message); }
+            }
+            return l;
         }
 
         // ---------- presets ----------

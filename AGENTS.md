@@ -22,6 +22,8 @@ src/ThirdParty/    TGASharpLib.cs, DDSReaderSharp.cs (MIT, unmodified, with thei
 src/ObjPoser.csproj  classic csproj, net48, lists the Compile items (add new files here AND in build.bat AND in the CI/test commands if needed)
 tests/CoreSelfTest.cs  console self-test (exit code 0 = pass)
 samples/sample_tpose.obj  synthetic box figure used by the CI self-test
+poses/             extra poses as *.json (+ preview PNGs, README) loaded by the program at start-up; copied next to the exe
+tools/PoseGen.cs   developer tool that solves / writes / renders those pose files (never commit the test model)
 .github/workflows/build.yml  CI: msbuild + self-test + zip artifact; release on tag v*
 assets/icon.ico    application icon (white T-Pose figure on blue)
 docs/images/       README screenshots
@@ -97,6 +99,7 @@ What was verified automatically: axis detection on rotated / flipped copies of a
 
 ## 6. How to extend
 - **Add a preset pose**: add a `Pose` in `Pose.BuildPresets()` using `Set("Joint Name", x, y, z)`, `Hand("L"|"R", kind)`, `Curl(...)`, `Expression(...)`. Append to the list (order = gallery order). Keep names unique. Verify visually with the headless harness (`ShotAll`). To solve arm poses numerically (like Facepalm), run a coordinate-descent on `Skinner.ComputeG` and compare a hand joint position / direction with a target, then hard-code the angles.
+- **Add an extra pose (no code)**: put a `*.json` pose file (see "Pose format") in `poses/`; `MainForm` loads the folder at start-up with `Pose.LoadFolder` (appended after the built-in presets, files sorted by name, names must be unique, bad files are skipped and reported in the status bar). `CoreSelfTest` checks that every file loads and gives finite results. To produce a pose with hand targets use `tools/PoseGen.cs` (add a `Pose` factory + a `case` in `Make`), render the preview and copy JSON + PNG into `poses/`.
 - **Add a joint**: add it in the `Skeleton` static constructor (parent first), add its position / end / radius in `Skeleton.Build`, decide whether it has a palm frame, extend `GroupNames` handling if it needs a new UI group, and add tests. Old pose JSON files keep working because joints are saved by name.
 - **Add an expression / hand preset**: `Pose.Expressions` / `Pose.HandKinds` + the `switch` in `Expression()` / `Hand()`.
 - **Add a texture format**: `TextureLoader.Load` / `Extensions`.

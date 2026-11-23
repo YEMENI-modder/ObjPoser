@@ -1,0 +1,28 @@
+{
+  "name": "Sitting - covering face (two hands)",
+  "snapToGround": true,
+  "liftHeightFraction": 0,
+  "joints": {
+    "Spine": [14, 0, 0],
+    "Chest": [8, 0, 0],
+    "Neck": [6, 0, 0],
+    "Head": [16, 0, 0],
+    "L Clavicle": [-27, -17, 4],
+    "L UpperArm": [-29, 50, -84],
+    "L ForeArm": [-20, 0, -107],
+    "L Hand": [6, 37, 32],
+    "R Clavicle": [-27, 17, -4],
+    "R UpperArm": [-29, -50, 84],
+    "R ForeArm": [-20, 0, 107],
+    "R Hand": [-6, -37, 32],
+    "L Thigh": [-90, 0, -2],
+    "L Shin": [92, 0, 0],
+    "L Foot": [-5, 0, 0],
+    "R Thigh": [-90, 0, 2],
+    "R Shin": [92, 0, 0],
+    "R Foot": [-5, 0, 0]
+  },
+  "translations": {
+
+  }
+}

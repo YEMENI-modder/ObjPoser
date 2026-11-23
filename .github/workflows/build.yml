@@ -36,6 +36,7 @@ jobs:
           Copy-Item src\bin\Release\ObjPoser.exe dist\
           Copy-Item README.md, README.ar.md, LICENSE, THIRD_PARTY_NOTICES.md dist\
           Copy-Item samples dist\samples -Recurse
+          Copy-Item poses dist\poses -Recurse
           Compress-Archive -Path dist\* -DestinationPath ObjPoser-windows.zip -Force
 
       - name: Upload build artifact

@@ -54,7 +54,7 @@
 
 <div dir="rtl" align="right">
 
-### الـ 18 وضعية (طالعة من الأداة نفسها بزر *لقطات لكل الوضعيات*)
+### الـ 27 وضعية (طالعة من الأداة نفسها بزر *لقطات لكل الوضعيات*)
 </div>
 
 <img src="docs/images/poses-sheet.png" alt="كل الوضعيات" width="900">
@@ -108,7 +108,20 @@
 
 <div dir="rtl" align="right">
 
-تقدر تضيف وضعياتك: عدّل أي وضعية، **Save pose (.json)**، وحمّلها بعدين بـ **Load pose** (تظهر في المعرض).
+### وضعيات إضافية (JSON، مجلد `poses`)
+هذي الوضعيات **مو مدموجة بالتطبيق**: ObjPoser يقرأ كل ملفات `*.json` في مجلد `poses` (جنب `ObjPoser.exe`) عند التشغيل. الصور والتفاصيل: [`poses/README.md`](poses/README.md).
+
+</div>
+
+| | | |
+|---|---|---|
+| Arms crossed (مكتوف اليدين) | Sitting - covering face (جلوس وتغطية الوجه باليدين) | Hanged corpse (جثة معلّقة بحبل) |
+| Hanged upside down (معلّقة مقلوبة) | Injured (شخص مصاب) | Stealth peeking (تخفّي، يطالع من الجدار) |
+| Sleeping (نوم) | Driving a car (سواقة سيارة) | Riding a motorbike / scooter (سواقة دباب) |
+
+<div dir="rtl" align="right">
+
+تقدر تضيف وضعياتك: عدّل أي وضعية، **Save pose (.json)**، وحمّلها بعدين بـ **Load pose**، أو حط الملف في مجلد `poses` وينحمّل تلقائي كل ما تشغّل التطبيق.
 
 ## الهيكل العظمي (69 مفصل)
 </div>
@@ -155,7 +168,7 @@ selftest.exe samples\sample_tpose.obj
 
 الاختبار الذاتي يفحص كشف المحاور، فحص الـ T-Pose، كل الوضعيات (LBS و DQS)، JSON الوضعيات، الـ Mirror، تصدير OBJ، إرجاع T-Pose، وملفات GLB؛ ويرجع كود خروج 0 لو كل شي نجح.
 
-ملف GitHub Actions ‏[`.github/workflows/build.yml`](.github/workflows/build.yml) يبني المشروع على `windows-latest` ويشغّل الاختبار ويرفع `ObjPoser-windows.zip`؛ ولو دفعت Tag مثل `v3.1.0` ينشر Release تلقائياً.
+ملف GitHub Actions ‏[`.github/workflows/build.yml`](.github/workflows/build.yml) يبني المشروع على `windows-latest` ويشغّل الاختبار ويرفع `ObjPoser-windows.zip`؛ ولو دفعت Tag مثل `v3.2.0` ينشر Release تلقائياً.
 
 للـ AI والمطورين الجدد: اقرأ [`AGENTS.md`](AGENTS.md) (الهيكلة، الاصطلاحات، كيف تطوّر وتختبر).
 

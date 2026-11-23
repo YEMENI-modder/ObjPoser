@@ -42,6 +42,26 @@ static class SelfTest
         for (int i = 0; i < rt.P.Length; i++) dmax = Math.Max(dmax, Math.Abs(rt.P[i] - rest[i]));
         Check(dmax < 1e-6 * Math.Max(1, sk.H), "T-Pose preset leaves the mesh unchanged (max diff " + dmax.ToString("G2") + ")");
 
+
+        // extra poses (poses/*.json next to the program): every file loads, is unique and gives finite coordinates
+        string poseDir = Path.Combine(Path.GetDirectoryName(Path.GetFullPath(path)) ?? ".", "..", "poses");
+        if (!Directory.Exists(poseDir)) poseDir = "poses";
+        List<string> perr = new List<string>(); List<Pose> extra = Pose.LoadFolder(poseDir, perr);
+        Check(perr.Count == 0, "extra pose files load without errors" + (perr.Count > 0 ? " (" + perr[0] + ")" : ""));
+        Check(extra.Count >= 9, "at least 9 extra poses in the poses folder (" + extra.Count + ")");
+        HashSet<string> names = new HashSet<string>(); foreach (Pose pp in poses) names.Add(pp.Name); bool uniq = true;
+        foreach (Pose pp in extra) if (!names.Add(pp.Name)) uniq = false;
+        Check(uniq, "extra pose names are unique and do not clash with the built-in ones");
+        bool extraFinite = true;
+        foreach (Pose pp in extra)
+            foreach (bool dqs in new bool[] { false, true })
+            {
+                s.UseDQS = dqs; PosedResult r = s.Apply(pp);
+                foreach (double v in r.P) if (double.IsNaN(v) || double.IsInfinity(v)) extraFinite = false;
+            }
+        s.UseDQS = false;
+        Check(extraFinite, "all extra poses give finite coordinates (LBS + DQS)");
+
         // pose JSON + mirror
         Pose q = poses[2].Clone().Expression("Smile").Hand("L", "Fist");
         Pose q2 = Pose.FromJson(q.ToJson()); double dd = 0;
